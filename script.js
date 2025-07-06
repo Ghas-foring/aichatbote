@@ -77,7 +77,7 @@ clearHistoryBtn.addEventListener('click', () => {
 
 async function getAIResponse(userInput) {
   const messages = [
-    { role: "system", content: "আপনি একজন বুদ্ধিমান AI, বাংলা এবং ইংরেজি দুই ভাষায় গল্পের মতো সহজভাবে উত্তর দিবেন।" },
+    { role: "system", content: "আপনি একজন বুদ্ধিমান AI, বাংলা এবং ইংরেজি দুই ভাষায় সহজভাবে উত্তর দিবেন।" },
     { role: "user", content: userInput }
   ];
 
