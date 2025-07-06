@@ -7,23 +7,28 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>AI Chatbot</h1>
-  
-  <select id="language">
-    <option value="bn-BD">বাংলা</option>
-    <option value="en-US">English</option>
-  </select>
+  <div class="container">
+    <h1>🎙️ AI Chatbot</h1>
 
-  <button id="toggle-mode">🌙 ডার্ক/লাইট মোড</button>
+    <div class="controls">
+      <select id="language">
+        <option value="bn-BD">বাংলা</option>
+        <option value="en-US">English</option>
+      </select>
+      <button id="toggle-mode">🌙 ডার্ক/লাইট মোড</button>
+    </div>
 
-  <div id="status">অপেক্ষা করা হচ্ছে...</div>
+    <div id="status">অপেক্ষা করা হচ্ছে...</div>
 
-  <ul id="history"></ul>
+    <ul id="history"></ul>
 
-  <div id="response-text"></div>
+    <div id="response-text"></div>
 
-  <button id="start-stop-btn">🎙️ কথা বলা শুরু করুন</button>
-  <button id="clear-history">🗑️ ইতিহাস মুছে দিন</button>
+    <div class="action-buttons">
+      <button id="start-stop-btn">🎙️ কথা বলা শুরু করুন</button>
+      <button id="clear-history">🗑️ ইতিহাস মুছুন</button>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>
