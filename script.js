@@ -1,19 +1,30 @@
-const chatbox = document.getElementById('chatbox');
-const userInput = document.getElementById('userInput');
-const sendBtn = document.getElementById('sendBtn');
-const micBtn = document.getElementById('micBtn');
+const startStopBtn = document.getElementById('start-stop-btn');
+const clearHistoryBtn = document.getElementById('clear-history');
 const statusEl = document.getElementById('status');
+const responseText = document.getElementById('response-text');
+const historyEl = document.getElementById('history');
+const toggleModeBtn = document.getElementById('toggle-mode');
+const languageSelect = document.getElementById('language');
 
-const OPENAI_API_KEY = "YOUR_OPENAI_API_KEY_HERE"; // এখানে তোমার OpenAI API কী বসাও
+const openaiApiKey = 'YOUR_OPENAI_API_KEY_HERE';
 
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 const recognition = new SpeechRecognition();
-recognition.lang = 'bn-BD';
 recognition.interimResults = false;
 
+recognition.lang = languageSelect.value;
 let isListening = false;
 
-micBtn.addEventListener('click', () => {
+toggleModeBtn.addEventListener('click', () => {
+  document.body.classList.toggle('dark-mode');
+});
+
+languageSelect.addEventListener('change', () => {
+  recognition.lang = languageSelect.value;
+  statusEl.textContent = `ভাষা পরিবর্তন করা হয়েছে: ${languageSelect.options[languageSelect.selectedIndex].text}`;
+});
+
+startStopBtn.addEventListener('click', () => {
   if (isListening) {
     recognition.stop();
   } else {
@@ -24,87 +35,79 @@ micBtn.addEventListener('click', () => {
 recognition.onstart = () => {
   isListening = true;
   statusEl.textContent = 'শোনা হচ্ছে...';
-  micBtn.textContent = '⏹️ বন্ধ করুন';
+  startStopBtn.textContent = '⏹️ কথা বলা বন্ধ করুন';
+  startStopBtn.classList.add('recording');
 };
 
 recognition.onend = () => {
   isListening = false;
   statusEl.textContent = 'অপেক্ষা করা হচ্ছে...';
-  micBtn.textContent = '🎤 মাইক্রোফোন চালু করুন';
+  startStopBtn.textContent = '🎙️ কথা বলা শুরু করুন';
+  startStopBtn.classList.remove('recording');
 };
 
-recognition.onerror = (event) => {
-  statusEl.textContent = 'ত্রুটি: ' + event.error;
+recognition.onerror = (e) => {
+  statusEl.textContent = 'ত্রুটি: ' + e.error;
 };
 
-recognition.onresult = (event) => {
+recognition.onresult = async (event) => {
   const transcript = event.results[0][0].transcript;
-  appendMessage(transcript, 'user');
-  getBotResponse(transcript);
+  addToHistory(`🧑 আপনি: ${transcript}`);
+  statusEl.textContent = 'AI ভাবছে...';
+
+  const aiReply = await getAIResponse(transcript);
+  responseText.textContent = aiReply;
+  addToHistory(`🤖 AI: ${aiReply}`);
+  speak(aiReply);
+  statusEl.textContent = 'অপেক্ষা করা হচ্ছে...';
 };
 
-sendBtn.addEventListener('click', () => {
-  const text = userInput.value.trim();
-  if (!text) return;
-  appendMessage(text, 'user');
-  userInput.value = '';
-  getBotResponse(text);
-});
-
-userInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') {
-    sendBtn.click();
-  }
-});
-
-function appendMessage(text, sender) {
-  const msgDiv = document.createElement('div');
-  msgDiv.classList.add('message');
-  msgDiv.classList.add(sender === 'user' ? 'userMsg' : 'botMsg');
-  msgDiv.textContent = text;
-  chatbox.appendChild(msgDiv);
-  chatbox.scrollTop = chatbox.scrollHeight;
+function addToHistory(text) {
+  const li = document.createElement('li');
+  li.textContent = text;
+  historyEl.appendChild(li);
+  historyEl.scrollTop = historyEl.scrollHeight;
 }
 
-async function getBotResponse(text) {
-  statusEl.textContent = "AI ভাবছে...";
-  appendMessage("AI ভাবছে...", 'bot');
+clearHistoryBtn.addEventListener('click', () => {
+  historyEl.innerHTML = '';
+  responseText.textContent = '';
+  statusEl.textContent = 'ইতিহাস মুছে দেওয়া হয়েছে।';
+});
+
+async function getAIResponse(userInput) {
+  const messages = [
+    { role: "system", content: "আপনি একজন বুদ্ধিমান AI, বাংলা এবং ইংরেজি দুই ভাষায় গল্পের মতো সহজভাবে উত্তর দিবেন।" },
+    { role: "user", content: userInput }
+  ];
 
   try {
-    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${openaiApiKey}`
       },
       body: JSON.stringify({
         model: 'gpt-3.5-turbo',
-        messages: [{ role: 'user', content: text }],
-        max_tokens: 200,
-        temperature: 0.7,
-      }),
+        messages: messages,
+        max_tokens: 150,
+        temperature: 0.7
+      })
     });
-
-    const data = await res.json();
-
-    const loadingMsg = chatbox.querySelector('.botMsg:last-child');
-    if (loadingMsg && loadingMsg.textContent === 'AI ভাবছে...') {
-      loadingMsg.remove();
-    }
-
-    if (data.choices && data.choices[0].message) {
-      appendMessage(data.choices[0].message.content, 'bot');
-      statusEl.textContent = "";
+    const data = await response.json();
+    if (data.choices && data.choices[0] && data.choices[0].message) {
+      return data.choices[0].message.content.trim();
     } else {
-      appendMessage('কোন উত্তর পাওয়া যায়নি।', 'bot');
-      statusEl.textContent = "";
+      return 'উত্তর পাওয়া যায়নি। আবার চেষ্টা করুন।';
     }
   } catch (error) {
-    const loadingMsg = chatbox.querySelector('.botMsg:last-child');
-    if (loadingMsg && loadingMsg.textContent === 'AI ভাবছে...') {
-      loadingMsg.remove();
-    }
-    appendMessage('ত্রুটি হয়েছে: ' + error.message, 'bot');
-    statusEl.textContent = "";
+    return 'API তে সমস্যা হয়েছে: ' + error.message;
   }
+}
+
+function speak(text) {
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = /[\u0980-\u09FF]/.test(text) ? 'bn-BD' : 'en-US';
+  window.speechSynthesis.speak(utterance);
 }
