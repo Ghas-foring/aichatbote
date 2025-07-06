@@ -1,48 +1,33 @@
-
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AI Voice Chat (Hugging Face)</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>সুন্দর AI Chatbot</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<header>
   <div class="container">
-    <h1>AI Voice Chat</h1>
-    <button id="toggle-mode">🌙 ডার্ক/☀️ লাইট মোড</button>
+    <h1>সুন্দর AI Chatbot</h1>
+
+    <div id="chatbox"></div>
+
+    <div class="input-area">
+      <input
+        type="text"
+        id="userInput"
+        placeholder="এখানে লিখুন..."
+        autocomplete="off"
+        autofocus
+      />
+      <button id="sendBtn">▶️</button>
+    </div>
+
+    <div id="status"></div>
   </div>
-</header>
 
-<main>
-  <div class="container">
-    <div id="language-select">
-      <label for="language">ভাষা পরিবর্তন করুন: </label>
-      <select id="language">
-        <option value="bn-BD">বাংলা</option>
-        <option value="en-US">English</option>
-      </select>
-    </div>
-
-    <div id="history-container">
-      <h2>কথোপকথনের ইতিহাস</h2>
-      <ul id="history"></ul>
-      <button id="clear-history">ইতিহাস মুছুন</button>
-    </div>
-
-    <div id="controls">
-      <button id="start-stop-btn">🎙️ কথা বলা শুরু করুন</button>
-      <p id="status">অপেক্ষা করা হচ্ছে...</p>
-    </div>
-
-    <div id="response-container">
-      <h2>AI-এর উত্তর</h2>
-      <p id="response-text"></p>
-    </div>
-  </div>
-</main>
-
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
