@@ -1,12 +1,62 @@
 const chatbox = document.getElementById('chatbox');
 const userInput = document.getElementById('userInput');
 const sendBtn = document.getElementById('sendBtn');
+const micBtn = document.getElementById('micBtn');
 const statusEl = document.getElementById('status');
 
-// তোমার OpenAI API Key এখানে বসাও
-const OPENAI_API_KEY = "YOUR_OPENAI_API_KEY_HERE";
+const OPENAI_API_KEY = "YOUR_OPENAI_API_KEY_HERE"; // এখানে তোমার OpenAI API কী বসাও
 
-// মেসেজ অ্যাপেন্ড করার ফাংশন
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const recognition = new SpeechRecognition();
+recognition.lang = 'bn-BD';
+recognition.interimResults = false;
+
+let isListening = false;
+
+micBtn.addEventListener('click', () => {
+  if (isListening) {
+    recognition.stop();
+  } else {
+    recognition.start();
+  }
+});
+
+recognition.onstart = () => {
+  isListening = true;
+  statusEl.textContent = 'শোনা হচ্ছে...';
+  micBtn.textContent = '⏹️ বন্ধ করুন';
+};
+
+recognition.onend = () => {
+  isListening = false;
+  statusEl.textContent = 'অপেক্ষা করা হচ্ছে...';
+  micBtn.textContent = '🎤 মাইক্রোফোন চালু করুন';
+};
+
+recognition.onerror = (event) => {
+  statusEl.textContent = 'ত্রুটি: ' + event.error;
+};
+
+recognition.onresult = (event) => {
+  const transcript = event.results[0][0].transcript;
+  appendMessage(transcript, 'user');
+  getBotResponse(transcript);
+};
+
+sendBtn.addEventListener('click', () => {
+  const text = userInput.value.trim();
+  if (!text) return;
+  appendMessage(text, 'user');
+  userInput.value = '';
+  getBotResponse(text);
+});
+
+userInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    sendBtn.click();
+  }
+});
+
 function appendMessage(text, sender) {
   const msgDiv = document.createElement('div');
   msgDiv.classList.add('message');
@@ -16,7 +66,6 @@ function appendMessage(text, sender) {
   chatbox.scrollTop = chatbox.scrollHeight;
 }
 
-// AI থেকে রেসপন্স আনার ফাংশন
 async function getBotResponse(text) {
   statusEl.textContent = "AI ভাবছে...";
   appendMessage("AI ভাবছে...", 'bot');
@@ -38,7 +87,6 @@ async function getBotResponse(text) {
 
     const data = await res.json();
 
-    // আগের 'AI ভাবছে...' মেসেজ মুছে ফেলা
     const loadingMsg = chatbox.querySelector('.botMsg:last-child');
     if (loadingMsg && loadingMsg.textContent === 'AI ভাবছে...') {
       loadingMsg.remove();
@@ -60,19 +108,3 @@ async function getBotResponse(text) {
     statusEl.textContent = "";
   }
 }
-
-// সেন্ড বাটনে ক্লিক ইভেন্ট
-sendBtn.addEventListener('click', () => {
-  const text = userInput.value.trim();
-  if (!text) return;
-  appendMessage(text, 'user');
-  userInput.value = '';
-  getBotResponse(text);
-});
-
-// এন্টার প্রেস করলে পাঠানো হবে
-userInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') {
-    sendBtn.click();
-  }
-});
