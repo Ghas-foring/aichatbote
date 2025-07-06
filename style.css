@@ -1,79 +1,119 @@
-
+/* ফন্ট এবং বেসিক স্টাইল */
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Roboto', sans-serif;
+  background: #f0f4f8;
   margin: 0;
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  transition: background-color 0.3s, color 0.3s;
-}
-.container {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 20px;
-}
-header {
-  background-color: #4caf50;
-  color: white;
-  padding: 15px 0;
-  margin-bottom: 20px;
-}
-header .container {
+  height: 100vh;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
 }
+
+.container {
+  background: #fff;
+  width: 420px;
+  max-width: 95vw;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  height: 600px;
+}
+
 h1 {
-  margin: 0;
+  margin: 0 0 15px 0;
+  text-align: center;
+  color: #333;
+  font-weight: 700;
 }
-#language-select {
+
+#chatbox {
+  flex-grow: 1;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  overflow-y: auto;
+  background: #f9fafb;
+  box-sizing: border-box;
   margin-bottom: 15px;
-}
-select#language {
-  padding: 5px 10px;
   font-size: 16px;
 }
-#history-container {
-  margin-bottom: 20px;
+
+.message {
+  padding: 10px 14px;
+  margin: 6px 0;
+  border-radius: 15px;
+  max-width: 80%;
+  word-wrap: break-word;
+  line-height: 1.4;
 }
-#history {
-  list-style: none;
-  padding: 10px;
-  max-height: 200px;
-  overflow-y: auto;
+
+.userMsg {
+  background-color: #cce5ff;
+  align-self: flex-end;
+  color: #004085;
+}
+
+.botMsg {
+  background-color: #e2e3e5;
+  align-self: flex-start;
+  color: #383d41;
+  font-style: italic;
+}
+
+.input-area {
+  display: flex;
+  gap: 10px;
+}
+
+#userInput {
+  flex-grow: 1;
+  padding: 12px 15px;
+  border-radius: 25px;
   border: 1px solid #ccc;
-  background-color: var(--bg-secondary);
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.2s ease;
 }
-#clear-history {
-  margin-top: 10px;
-  padding: 8px 12px;
-  background-color: #e74c3c;
-  color: white;
+
+#userInput:focus {
+  border-color: #007bff;
+}
+
+#sendBtn {
+  background-color: #007bff;
   border: none;
-  cursor: pointer;
-}
-#controls button {
-  padding: 12px 24px;
-  background-color: #4caf50;
   color: white;
-  border: none;
+  padding: 0 20px;
+  border-radius: 25px;
   cursor: pointer;
+  font-size: 20px;
+  transition: background-color 0.2s ease;
 }
-#response-container {
-  margin-top: 20px;
-  padding: 15px;
-  border: 1px solid #ccc;
-  background-color: var(--bg-secondary);
+
+#sendBtn:hover {
+  background-color: #0056b3;
 }
-p#status {
+
+#status {
   margin-top: 10px;
+  font-size: 14px;
+  color: #555;
+  text-align: center;
+  min-height: 18px;
 }
-:root {
-  --bg-color: #f8f9fa;
-  --text-color: #212529;
-  --bg-secondary: #fff;
-}
-body.dark-mode {
-  --bg-color: #121212;
-  --text-color: #e0e0e0;
-  --bg-secondary: #1e1e1e;
+
+/* Responsive মোবাইলের জন্য */
+@media (max-width: 480px) {
+  .container {
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    padding: 15px;
+  }
+
+  #chatbox {
+    font-size: 14px;
+  }
 }
