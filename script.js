@@ -6,7 +6,7 @@ const historyEl = document.getElementById('history');
 const toggleModeBtn = document.getElementById('toggle-mode');
 const languageSelect = document.getElementById('language');
 
-const openaiApiKey = 'YOUR_OPENAI_API_KEY_HERE';
+const openaiApiKey = 'YOUR_OPENAI_API_KEY_HERE';  // এখনে তোমার API Key বসাবে
 
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 const recognition = new SpeechRecognition();
